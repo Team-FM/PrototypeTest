@@ -1,10 +1,5 @@
+using Photon.Pun;
 using UnityEngine;
-using UnityEngine.AI;
-using Cysharp.Threading.Tasks;
-using System.Threading;
-using UnityEngine.Rendering;
-using static UnityEngine.GraphicsBuffer;
-using UnityEngine.TextCore.Text;
 
 namespace CharacterImplement
 {
@@ -17,6 +12,7 @@ namespace CharacterImplement
 		#region Public Fields
 
 		public Character _character;
+		public int Health;
 
 		#endregion
 
@@ -25,6 +21,16 @@ namespace CharacterImplement
 		void Awake()
 		{
 			_character = GetComponentInChildren<Character>();
+		}
+
+		private void Start()
+		{
+			Health = _character.CurHP;
+		}
+
+		private void Update()
+		{
+			Health = _character.CurHP;
 		}
 
 		#endregion
