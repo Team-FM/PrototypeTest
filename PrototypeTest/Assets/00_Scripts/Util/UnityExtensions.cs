@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿ using UnityEngine;
 public static class UnityExtensions
 {
     public static T GetComponentAssert<T>(this GameObject gameObject)
