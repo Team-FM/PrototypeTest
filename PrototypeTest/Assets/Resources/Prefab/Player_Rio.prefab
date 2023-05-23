@@ -4208,6 +4208,7 @@ GameObject:
   - component: {fileID: 6071996990410007461}
   - component: {fileID: 190344992250460639}
   - component: {fileID: 6038949327601178400}
+  - component: {fileID: 5179842640687283348}
   m_Layer: 3
   m_Name: Rio
   m_TagString: Untagged
@@ -4265,6 +4266,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _character: {fileID: 0}
+  TriggerData: 0
+  TriggerTable: []
+--- !u!114 &5179842640687283348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6849906567426439455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 1
+    Name: isMove
+  - Type: 9
+    SynchronizeType: 0
+    Name: OnAttack
+  - Type: 9
+    SynchronizeType: 0
+    Name: OnSkill1
+  - Type: 9
+    SynchronizeType: 0
+    Name: OnAnimationEnd
+  m_SynchronizeLayers:
+  - SynchronizeType: 1
+    LayerIndex: 0
+  - SynchronizeType: 1
+    LayerIndex: 1
 --- !u!1 &6906690529144975946
 GameObject:
   m_ObjectHideFlags: 0
@@ -5779,6 +5814,8 @@ GameObject:
   - component: {fileID: 9143038932956870239}
   - component: {fileID: 9143038932956870236}
   - component: {fileID: 9143038932956870225}
+  - component: {fileID: 1171010123836878471}
+  - component: {fileID: 3316657642135566756}
   m_Layer: 3
   m_Name: Character
   m_TagString: Untagged
@@ -5866,10 +5903,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e2332c57a23664a96f5b18f727dd18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CharacterAnimComponent: {fileID: 0}
   _animator: {fileID: 0}
   _agent: {fileID: 0}
-  _moveSpeed: 8
+  MaxHP: 1000
+  CurHP: 0
+  _moveSpeed: 5
   _attackRange: 4
+  AtkStat: 10
   _stopDistance: 0
   _chaseTarget: {fileID: 0}
   _moveKind: 0
@@ -5877,6 +5918,48 @@ MonoBehaviour:
   _isSkillActionMoveLock: 0
   _isAtkActionDivideUpperBody: 1
   _isSkill1State: 0
+--- !u!114 &1171010123836878471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9143038932956870234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 9143038932956870225}
+  - {fileID: 3316657642135566756}
+  - {fileID: 6038949327601178400}
+  - {fileID: 5179842640687283348}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &3316657642135566756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9143038932956870234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &9143038933061509663
 GameObject:
   m_ObjectHideFlags: 0
@@ -5888,7 +5971,7 @@ GameObject:
   - component: {fileID: 9143038933061509649}
   - component: {fileID: 9143038933061509651}
   - component: {fileID: 9143038933061509648}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Player_Rio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5924,6 +6007,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _character: {fileID: 0}
+  Health: 0
 --- !u!114 &9143038933061509648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5937,6 +6021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 0}
+  _character: {fileID: 0}
 --- !u!1 &9159071273943970156
 GameObject:
   m_ObjectHideFlags: 0

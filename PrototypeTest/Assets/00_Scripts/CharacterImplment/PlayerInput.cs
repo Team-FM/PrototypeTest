@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,6 +13,7 @@ namespace CharacterImplement
 		#region Public Field
 
 		public PlayerController _player;
+		public Character _character;
 
 		#endregion
 
@@ -20,9 +22,22 @@ namespace CharacterImplement
 		void Awake()
 		{
 			_player = GetComponent<PlayerController>();
+			_character = GetComponentInChildren<Character>();
 		}
 
 		private void Update()
+		{
+			if (true == _character.photonView.IsMine)
+			{
+				ProcessInput();
+			}
+		}
+
+		#endregion
+
+		#region Public Methods
+
+		public void ProcessInput()
 		{
 			if (Input.GetMouseButtonDown(1))
 			{
@@ -36,7 +51,7 @@ namespace CharacterImplement
 					}
 					else
 					{
-						Debug.Log("¾Ó");
+						Debug.Log("ÇØ´ç ÁÂÇ¥·Î ÀÌµ¿");
 						_player.MoveToPosition(hit.point);
 					}
 				}

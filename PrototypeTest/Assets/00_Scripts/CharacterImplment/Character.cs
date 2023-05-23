@@ -1,14 +1,12 @@
 using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Triggers;
+using Photon.Pun;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.TextCore.Text;
-using static CharacterImplement.Character;
 
 namespace CharacterImplement
 {
-    public class Character : MonoBehaviour
+	public class Character : MonoBehaviourPunCallbacks, IPunObservable
     {
         public enum StateKind
         {
@@ -31,11 +29,15 @@ namespace CharacterImplement
 
 		#region Public Fields
 
+		public CharacterAnimation CharacterAnimComponent;
 		public Animator _animator;
 		public NavMeshAgent _agent;
 
+		public int MaxHP;
+		public int CurHP;
 		public float _moveSpeed = 0f;
         public float _attackRange = 0f;
+		public int AtkStat;
 
 		public float _stopDistance = 0f;
 		public Transform _chaseTarget;
@@ -59,11 +61,14 @@ namespace CharacterImplement
         {
 			_animator = GetComponentInChildren<Animator>();
 			_agent = GetComponentInParent<NavMeshAgent>();
+			CharacterAnimComponent = GetComponentInChildren<CharacterAnimation>();
 
 			_source = new CancellationTokenSource();
 			_source2 = new CancellationTokenSource();
 
 			_source2.Cancel();
+
+			CurHP = MaxHP;
 		}
 
 		void Start()
@@ -73,18 +78,16 @@ namespace CharacterImplement
 
 		private void Update()
 		{
-			if(Input.GetKeyDown(KeyCode.Space))
+			if (true == photonView.IsMine)
 			{
-				_agent.isStopped = !_agent.isStopped;
-			}
-
-			if(Input.GetKeyDown(KeyCode.Q))
-			{
-				if (false == _isSkill1State)
+				if (Input.GetKeyDown(KeyCode.Q))
 				{
-					_animator.SetTrigger("OnSkill1");
+					if (false == _isSkill1State)
+					{
+						CharacterAnimComponent.SetTrigger(CharacterAnimation.TriggerKind.OnSkill1);
 
-					_isSkill1State = true;
+						_isSkill1State = true;
+					}
 				}
 			}
 		}
@@ -102,6 +105,7 @@ namespace CharacterImplement
 				_agent.destination = destination;
 
 				_animator.SetBool("isMove", true);
+				_chaseTarget = null;
 
 				if (_moveKind == MoveKind.None)
 				{
@@ -172,19 +176,16 @@ namespace CharacterImplement
 
 			switch (_moveKind)
 			{
-				case MoveKind.MoveToPos:
-					_animator.SetBool("isMove", false);
-
-					break;
-
 				case MoveKind.ChaseCharacter:
-					_animator.SetTrigger("OnAttack");
+					CharacterAnimComponent.SetTrigger(CharacterAnimation.TriggerKind.OnAttack);
 
 					Vector3 position = _chaseTarget.transform.position;
 					position.y = transform.position.y;
 					transform.LookAt(position);
 
 					_agent.ResetPath();
+
+					_chaseTarget.GetComponent<Character>().TakeHit(AtkStat);
 
 					_chaseTargetToken = _source2.Token;
 					_chaseTarget = null;
@@ -197,11 +198,31 @@ namespace CharacterImplement
 			_animator.SetBool("isMove", false);
 		}
 
+		public void TakeHit(int damage)
+		{
+			photonView.RPC("TakeHitRPC", RpcTarget.All, damage);
+		}
+
+		[PunRPC]
+		public void TakeHitRPC(int damage)
+		{
+			CurHP -= damage;
+		}
+
 		public void OnAnimationEnd()
 		{
-			_animator.SetTrigger("OnAnimationEnd");
+			CharacterAnimComponent.SetTrigger(CharacterAnimation.TriggerKind.OnAnimationEnd);
 
 			_isSkill1State = false;
+		}
+
+		#endregion
+
+		#region Photon Implement Methods
+
+		public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+		{
+			
 		}
 
 		#endregion
