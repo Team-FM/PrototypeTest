@@ -1,6 +1,7 @@
 using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -96,7 +97,8 @@ public class PlayerNetwork : MonoBehaviour
     private void RPC_CreatePlayer()
     {
         float randomValue = Random.Range(0, 5f);
-        GameObject obj = PhotonNetwork.Instantiate("NewPlayer", Vector3.up * randomValue, Quaternion.identity, 0);
+        //GameObject obj = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Player_Ricky"), new Vector3(0f, 1f, -9f), Quaternion.identity, 0);
+        GameObject obj = PhotonNetwork.Instantiate(Path.Combine("Prefab", "Player_Rio"), new Vector3(0f, 1f, -9f), Quaternion.identity, 0);
         CurrentPlayer = obj.GetComponent<PlayerMovement>();
     }
 }
