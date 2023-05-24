@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using System.Threading;
+using UniRx;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -69,7 +70,13 @@ namespace CharacterImplement
 			_source2.Cancel();
 
 			CurHP = MaxHP;
-		}
+
+			if (true == photonView.IsMine)
+			{
+				HealthModel.SetCurHealth(CurHP);
+				HealthModel.SetMaxHealth(MaxHP);
+			}
+        }
 
 		void Start()
         {
@@ -200,13 +207,21 @@ namespace CharacterImplement
 
 		public void TakeHit(int damage)
 		{
-			photonView.RPC("TakeHitRPC", RpcTarget.All, damage);
+            //if (true == photonView.IsMine)
+            {
+				CurHP = System.Math.Max(CurHP - damage, 0);
+                photonView.RPC("UpdateCurHPRPC", RpcTarget.All, CurHP);
+            }
 		}
 
 		[PunRPC]
-		public void TakeHitRPC(int damage)
+		public void UpdateCurHPRPC(int newHP)
 		{
-			CurHP -= damage;
+			if (photonView.IsMine)
+			{
+				HealthModel.SetCurHealth(newHP);
+			}
+			CurHP = newHP;
 		}
 
 		public void OnAnimationEnd()
