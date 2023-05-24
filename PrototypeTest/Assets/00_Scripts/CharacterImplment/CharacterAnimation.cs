@@ -11,6 +11,7 @@ public class CharacterAnimation : MonoBehaviourPunCallbacks, IPunObservable
 		OnAttack,
 		OnSkill1,
 		OnAnimationEnd,
+		OnInteract,
 		MAX
 	}
 
@@ -33,6 +34,7 @@ public class CharacterAnimation : MonoBehaviourPunCallbacks, IPunObservable
 		TriggerTable[(int)TriggerKind.OnAttack] = "OnAttack";
 		TriggerTable[(int)TriggerKind.OnSkill1] = "OnSkill1";
 		TriggerTable[(int)TriggerKind.OnAnimationEnd] = "OnAnimationEnd";
+		TriggerTable[(int)TriggerKind.OnInteract] = "OnInteract";
 	}
 
 	#endregion

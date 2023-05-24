@@ -105,7 +105,5 @@ public class PlayerNetwork : MonoBehaviour
             playerPrefabName = Path.Combine("Prefab", "Player_Nicky");
         GameObject obj = PhotonNetwork.Instantiate(playerPrefabName, new Vector3(0f, 1f, -9f), Quaternion.identity, 0);
         CurrentPlayer = obj.GetComponent<PlayerMovement>();
-
-        SceneManager.LoadScene("HUD_Test", LoadSceneMode.Additive);
     }
 }

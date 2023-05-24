@@ -5914,6 +5914,7 @@ MonoBehaviour:
   _stopDistance: 0
   _chaseTarget: {fileID: 0}
   _moveKind: 0
+  ChaseTargetKind: 0
   _skill1MoveSpeed: 0
   _isSkillActionMoveLock: 0
   _isAtkActionDivideUpperBody: 1

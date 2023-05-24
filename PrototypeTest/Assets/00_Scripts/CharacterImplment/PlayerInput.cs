@@ -44,7 +44,7 @@ namespace CharacterImplement
 				RaycastHit hit;
 				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity))
 				{
-					if (null != hit.collider && hit.collider.gameObject.layer == LayerMask.NameToLayer("Character"))
+					if (null != hit.collider && hit.collider.gameObject.layer != LayerMask.NameToLayer("Default"))
 					{
 						Debug.Log("Ãß°Ý");
 						_player.ChaseTarget(hit.collider.transform);
