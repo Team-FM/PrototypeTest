@@ -10,7 +10,8 @@ public class HealthView : View
     private void Awake()
     {
         HealthImage = transform.Find("Health Gauge").GetComponentAssert<Image>();
-        CurHealthText = transform.Find("Health Text Group").Find("Current Health Text").GetComponent<TMP_Text>();
-        MaxHealthText = transform.Find("Health Text Group").Find("Max Health Text").GetComponent<TMP_Text>();
+        Transform heatlhTextGroup = transform.Find("Health Text Group");
+        CurHealthText = heatlhTextGroup.Find("Current Health Text").GetComponent<TMP_Text>();
+        MaxHealthText = heatlhTextGroup.Find("Max Health Text").GetComponent<TMP_Text>();
     }
 }
