@@ -1,13 +1,13 @@
 ﻿using UniRx;
 
-public class HealthViewPresenter : Presenter
+public class CharacterStatusViewPresenter : Presenter
 {
-    private HealthView _healthView;
+    private CharacterStatusView _healthView;
     private CompositeDisposable _compositeDisposable = new();
 
     public override void OnInitialize(View view)
     {
-        _healthView = view as HealthView;
+        _healthView = view as CharacterStatusView;
 
         InitializeRx();
     }
@@ -25,14 +25,14 @@ public class HealthViewPresenter : Presenter
 
     protected override void OnUpdatedModel()
     {
-        HealthModel.CurHealth.Subscribe(UpdateGauge).AddTo(_compositeDisposable);
-        HealthModel.CurHealth.Subscribe(UpdateCurText).AddTo(_compositeDisposable);
-        HealthModel.MaxHealth.Subscribe(UpdateGauge).AddTo(_compositeDisposable);
-        HealthModel.MaxHealth.Subscribe(UpdateMaxText).AddTo(_compositeDisposable);
+        CharacterStatusModel.CurHealth.Subscribe(UpdateGauge).AddTo(_compositeDisposable);
+        CharacterStatusModel.CurHealth.Subscribe(UpdateCurText).AddTo(_compositeDisposable);
+        CharacterStatusModel.MaxHealth.Subscribe(UpdateGauge).AddTo(_compositeDisposable);
+        CharacterStatusModel.MaxHealth.Subscribe(UpdateMaxText).AddTo(_compositeDisposable);
     }
     private void UpdateGauge(int value)
     {
-        _healthView.HealthImage.fillAmount = (float)HealthModel.CurHealth.Value / HealthModel.MaxHealth.Value;
+        _healthView.HealthImage.fillAmount = (float)CharacterStatusModel.CurHealth.Value / CharacterStatusModel.MaxHealth.Value;
     }
     private void UpdateCurText(int value)
     {

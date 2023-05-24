@@ -2,13 +2,13 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
-public class CharHeadHealthViewPresenter : Presenter
+public class CharacterHeaderViewPresenter : Presenter
 {
-    private CharHeadHealthView _headHealthView;
+    private CharacterHeaderView _headHealthView;
     private CompositeDisposable _compositeDisposable = new();
     public override void OnInitialize(View view)
     {
-        _headHealthView = view as CharHeadHealthView;
+        _headHealthView = view as CharacterHeaderView;
 
         InitializeRx();
     }
@@ -26,12 +26,14 @@ public class CharHeadHealthViewPresenter : Presenter
 
     protected override void OnUpdatedModel()
     {
-        HealthModel.CurHealth.Subscribe(UpdateHealthGauge).AddTo(_compositeDisposable);
-        HealthModel.MaxHealth.Subscribe(UpdateHealthGauge).AddTo(_compositeDisposable);
+        CharacterStatusModel.CurHealth.Subscribe(UpdateHealthGauge).AddTo(_compositeDisposable);
+        CharacterStatusModel.MaxHealth.Subscribe(UpdateHealthGauge).AddTo(_compositeDisposable);
+        CharacterStatusModel.CurLevel.Subscribe(UpdateLevel).AddTo(_compositeDisposable);
+        CharacterStatusModel.NickName.Subscribe(UpdateNickName).AddTo(_compositeDisposable);
     }
     private void UpdateHealthGauge(int value)
     {
-        _headHealthView.HealthImage.fillAmount = (float)HealthModel.CurHealth.Value / HealthModel.MaxHealth.Value;
+        _headHealthView.HealthImage.fillAmount = (float)CharacterStatusModel.CurHealth.Value / CharacterStatusModel.MaxHealth.Value;
         UpdateInstanceHealthGaugeCoroutine().Forget();
     }
     private async UniTaskVoid UpdateInstanceHealthGaugeCoroutine()
@@ -48,5 +50,13 @@ public class CharHeadHealthViewPresenter : Presenter
             _headHealthView.InstanceHealthImage.fillAmount = Mathf.Lerp(startAmount, endAmount, elapsedTime / 0.2f);
             await UniTask.Yield();
         }
+    }
+    private void UpdateLevel(int value)
+    {
+        _headHealthView.LevelText.text = value.ToString();
+    }
+    private void UpdateNickName(string nickName)
+    {
+        _headHealthView.NickNameText.text = nickName;
     }
 }
