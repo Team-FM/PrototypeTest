@@ -207,10 +207,9 @@ namespace CharacterImplement
 
 		public void TakeHit(int damage)
 		{
-            if (true == photonView.IsMine)
+            //if (true == photonView.IsMine)
             {
-                CurHP -= damage;
-                HealthModel.SetCurHealth(CurHP);
+				CurHP = System.Math.Max(CurHP - damage, 0);
                 photonView.RPC("UpdateCurHPRPC", RpcTarget.All, CurHP);
             }
 		}
@@ -218,6 +217,10 @@ namespace CharacterImplement
 		[PunRPC]
 		public void UpdateCurHPRPC(int newHP)
 		{
+			if (photonView.IsMine)
+			{
+				HealthModel.SetCurHealth(newHP);
+			}
 			CurHP = newHP;
 		}
 
