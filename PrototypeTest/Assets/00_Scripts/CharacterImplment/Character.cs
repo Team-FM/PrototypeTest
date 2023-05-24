@@ -1,8 +1,11 @@
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using System.Threading;
+using UniRx;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 namespace CharacterImplement
 {
@@ -23,6 +26,13 @@ namespace CharacterImplement
 			ChaseCharacter
 		}
 
+		public enum TargetKind
+		{
+			None,
+			InteractObject,
+			Enemy
+		}
+
 		#region Events
 
 		#endregion
@@ -38,10 +48,57 @@ namespace CharacterImplement
 		public float _moveSpeed = 0f;
         public float _attackRange = 0f;
 		public int AtkStat;
+		public float InteractRange = 1f;
 
 		public float _stopDistance = 0f;
 		public Transform _chaseTarget;
+		public Transform chaseTarget
+		{
+			get => _chaseTarget;
+			set
+			{
+				if (value == _chaseTarget)
+				{
+					return;
+				}
+
+				if( null != _chaseTarget)
+				{
+					if (_chaseTarget.gameObject.layer == LayerMask.NameToLayer("InteractObject"))
+					{
+						_chaseTarget.GetComponent<OccupationObject>().CancelInteract();
+
+						_chaseTarget.GetComponent<OccupationObject>().OnOccupationComplete -= SuccessOccupation;
+						_chaseTarget.GetComponent<OccupationObject>().OnOccupationComplete += SuccessOccupation;
+					}
+				}
+
+				_chaseTarget = value;
+				if (null != _chaseTarget)
+				{
+					if (_chaseTarget.gameObject.layer == LayerMask.NameToLayer("Character"))
+					{
+						ChaseTargetKind = TargetKind.Enemy;
+						_stopDistance = _attackRange;
+					}
+					else if (_chaseTarget.gameObject.layer == LayerMask.NameToLayer("InteractObject"))
+					{
+						ChaseTargetKind = TargetKind.InteractObject;
+						_stopDistance = InteractRange;
+					}
+					else
+					{
+						ChaseTargetKind = TargetKind.None;
+					}
+				}
+				else
+				{
+					ChaseTargetKind = TargetKind.None;
+				}
+			}
+		}
 		public MoveKind _moveKind;
+		public TargetKind ChaseTargetKind;
 
 		public CancellationTokenSource _source;
 		public CancellationTokenSource _source2;
@@ -69,7 +126,13 @@ namespace CharacterImplement
 			_source2.Cancel();
 
 			CurHP = MaxHP;
-		}
+
+			if (true == photonView.IsMine)
+			{
+				HealthModel.SetCurHealth(CurHP);
+				HealthModel.SetMaxHealth(MaxHP);
+			}
+        }
 
 		void Start()
         {
@@ -101,11 +164,12 @@ namespace CharacterImplement
 			if ((true == _isSkill1State && false == _isSkillActionMoveLock) ||
 				false == _isSkill1State)
 			{
+				_agent.isStopped = false;
 				_stopDistance = 0.1f;
 				_agent.destination = destination;
 
 				_animator.SetBool("isMove", true);
-				_chaseTarget = null;
+				chaseTarget = null;
 
 				if (_moveKind == MoveKind.None)
 				{
@@ -121,12 +185,17 @@ namespace CharacterImplement
 
 		public void ChaseTarget(Transform target)
 		{
+			if (null == target)
+			{
+				return;
+			}
+
 			if ((true == _isSkill1State && false == _isSkillActionMoveLock) ||
 				false == _isSkill1State)
 			{
-				_chaseTarget = target;
-				_stopDistance = _attackRange;
+				chaseTarget = target;
 
+				_agent.isStopped = false;
 				_animator.SetBool("isMove", true);
 
 				if (_moveKind == MoveKind.None)
@@ -146,7 +215,7 @@ namespace CharacterImplement
 
 		public async UniTaskVoid UpdateChaseTarget()
 		{
-			while (null != _chaseTarget)
+			while (null != _chaseTarget && _moveKind == MoveKind.ChaseCharacter)
 			{
 				_agent.destination = _chaseTarget.position;
 
@@ -177,36 +246,75 @@ namespace CharacterImplement
 			switch (_moveKind)
 			{
 				case MoveKind.ChaseCharacter:
-					CharacterAnimComponent.SetTrigger(CharacterAnimation.TriggerKind.OnAttack);
+					switch(ChaseTargetKind)
+					{
+						case TargetKind.InteractObject:
+							{
+								CharacterAnimComponent.SetTrigger(CharacterAnimation.TriggerKind.OnInteract);
 
-					Vector3 position = _chaseTarget.transform.position;
-					position.y = transform.position.y;
-					transform.LookAt(position);
+								Vector3 position = _chaseTarget.transform.position;
+								position.y = transform.position.y;
+								transform.LookAt(position);
 
-					_agent.ResetPath();
+								_chaseTarget.GetComponent<OccupationObject>().Interact();
+								_chaseTarget.GetComponent<OccupationObject>().OnOccupationComplete -= SuccessOccupation;
+								_chaseTarget.GetComponent<OccupationObject>().OnOccupationComplete += SuccessOccupation;
+							}
 
-					_chaseTarget.GetComponent<Character>().TakeHit(AtkStat);
+							break;
+						case TargetKind.Enemy:
+							{
+								CharacterAnimComponent.SetTrigger(CharacterAnimation.TriggerKind.OnAttack);
 
-					_chaseTargetToken = _source2.Token;
-					_chaseTarget = null;
+								Vector3 position = _chaseTarget.transform.position;
+								position.y = transform.position.y;
+								transform.LookAt(position);
+
+								if (null != _chaseTarget.GetComponent<Character>())
+								{
+									_chaseTarget.GetComponent<Character>().TakeHit(AtkStat);
+								}
+
+								_chaseTargetToken = _source2.Token;
+								chaseTarget = null;
+							}
+
+							break;
+					}
 
 					break;
 			}
+
+			_agent.isStopped = true;
 
 			_moveKind = MoveKind.None;
 			_arriveCheckToken = _source2.Token;
 			_animator.SetBool("isMove", false);
 		}
 
+		private void SuccessOccupation()
+		{
+			CharacterAnimComponent.SetTrigger(CharacterAnimation.TriggerKind.OnAnimationEnd);
+			Debug.Log("SuccessOccupation");
+		}
+
 		public void TakeHit(int damage)
 		{
-			photonView.RPC("TakeHitRPC", RpcTarget.All, damage);
+            //if (true == photonView.IsMine)
+            {
+				CurHP = System.Math.Max(CurHP - damage, 0);
+                photonView.RPC("UpdateCurHPRPC", RpcTarget.All, CurHP);
+            }
 		}
 
 		[PunRPC]
-		public void TakeHitRPC(int damage)
+		public void UpdateCurHPRPC(int newHP)
 		{
-			CurHP -= damage;
+			if (photonView.IsMine)
+			{
+				HealthModel.SetCurHealth(newHP);
+			}
+			CurHP = newHP;
 		}
 
 		public void OnAnimationEnd()
