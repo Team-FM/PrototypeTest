@@ -20,7 +20,9 @@ ModelImporter:
     rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: Event OnAnimationEnd has a time (9.000000) outside the
-      clip's valid range (0.000000..1.533333). It will never be fired
+      clip's valid range (0.000000..1.533333). It will never be firedEvent OnAnimationEnd
+      has a time (9.000000) outside the clip's valid range (0.000000..1.533333).
+      It will never be fired
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -1734,7 +1736,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
