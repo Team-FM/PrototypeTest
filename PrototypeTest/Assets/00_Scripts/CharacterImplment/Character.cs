@@ -129,8 +129,8 @@ namespace CharacterImplement
 
 			if (true == photonView.IsMine)
 			{
-				HealthModel.SetCurHealth(CurHP);
-				HealthModel.SetMaxHealth(MaxHP);
+				CharacterStatusModel.SetCurHealth(CurHP);
+				CharacterStatusModel.SetMaxHealth(MaxHP);
 			}
         }
 
@@ -312,7 +312,7 @@ namespace CharacterImplement
 		{
 			if (photonView.IsMine)
 			{
-				HealthModel.SetCurHealth(newHP);
+				CharacterStatusModel.SetCurHealth(newHP);
 			}
 			CurHP = newHP;
 		}

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HealthView : View
+public class CharacterStatusView : View
 {
     public Image HealthImage { get; private set; }
     public TMP_Text CurHealthText { get; private set; }
